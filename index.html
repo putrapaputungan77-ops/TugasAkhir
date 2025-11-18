@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Digital - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-text {
+            color: #333;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .class-info {
+            color: #667eea;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-bottom: 15px;
+            text-align: center;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 25px;
+            }
+            
+            .welcome-text {
+                font-size: 20px;
+            }
+            
+            .class-info {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1 class="welcome-text">Selamat Datang di Absensi Digital</h1>
+            <h2 class="class-info">Kelas C, Manajemen Pendidikan</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="nim">NIM</label>
+                    <input type="text" id="nim" name="nim" placeholder="Masukkan NIM Anda" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan Password" required>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                
+                <button type="submit" class="btn-login">Masuk</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const validNIMs = [
+            '131424061', '131424062', '131424063', '131424064', '131424065',
+            '131424066', '131424067', '131424068', '131424069', '131424070',
+            '131424071', '131424072', '131424073', '131424074', '131424076',
+            '131424077', '131424078', '131424079', '131424080', '131424081',
+            '131424082', '131424083', '131424084', '131424085', '131424086',
+            '131424088', '131424089', '131424090'
+        ];
+
+        // Ambil password dari localStorage, jika tidak ada gunakan password default
+        const getValidPassword = () => {
+            return localStorage.getItem('systemPassword') || '12345678';
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nimInput = document.getElementById('nim').value.trim();
+            const passwordInput = document.getElementById('password').value;
+            const validPassword = getValidPassword();
+            
+            errorMessage.textContent = '';
+            
+            if (!validNIMs.includes(nimInput)) {
+                errorMessage.textContent = 'NIM tidak valid! Silakan periksa kembali.';
+                return;
+            }
+            
+            if (passwordInput !== validPassword) {
+                errorMessage.textContent = 'Password salah! Silakan coba lagi.';
+                return;
+            }
+            
+            // Login berhasil - simpan NIM di session storage
+            sessionStorage.setItem('currentNIM', nimInput);
+            
+            // Redirect ke halaman dashboard
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>

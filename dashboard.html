@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Absensi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .user-info p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .content-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .content-box h3 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .admin-panel {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .admin-panel h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .password-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .form-group-inline {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group-inline label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .form-group-inline input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group-inline input:focus {
+            border-color: #667eea;
+        }
+
+        .btn-change-password {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-change-password:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .student-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .student-table th,
+        .student-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .student-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .student-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .attendance-form {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .form-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-info p {
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 15px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .radio-label:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .radio-label input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .radio-label input[type="radio"]:checked ~ .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .radio-label input[type="radio"]:checked ~ .radio-custom.hadir::after {
+            background: #27ae60;
+        }
+
+        .radio-label input[type="radio"]:checked ~ .radio-custom.izin::after {
+            background: #f39c12;
+        }
+
+        .radio-label input[type="radio"]:checked ~ .radio-custom.tidak-hadir::after {
+            background: #e74c3c;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-rekap {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-rekap:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-rekap:active {
+            transform: translateY(0);
+        }
+
+        .special-access-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .header h2 {
+                font-size: 16px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .radio-label {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-rekap {
+                width: 100%;
+            }
+
+            .form-group-inline {
+                flex-direction: column;
+            }
+
+            .form-group-inline input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Daftar Absensi Kelas C</h1>
+            <h2>Manajemen Pendidikan</h2>
+            <div class="user-info">
+                <p>Login sebagai: <strong id="currentUser"></strong><span id="specialBadge"></span></p>
+                <button class="btn-logout" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel untuk NIM 131424085 -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h4>👑 Panel Admin - Kelola Password Sistem</h4>
+            <div class="password-form">
+                <div class="form-group-inline">
+                    <div style="flex: 1;">
+                        <label for="newPassword">Password Baru:</label>
+                        <input type="password" id="newPassword" placeholder="Masukkan password baru">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="confirmPassword">Konfirmasi Password:</label>
+                        <input type="password" id="confirmPassword" placeholder="Konfirmasi password baru">
+                    </div>
+                    <button class="btn-change-password" onclick="changePassword()">Ubah Password</button>
+                </div>
+                <div class="success-message" id="passwordMessage"></div>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h3>Daftar Mahasiswa</h3>
+            <div class="table-wrapper">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIM</th>
+                            <th>Nama</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentList">
+                        <!-- Data mahasiswa akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="attendance-form">
+                <h3>Isi Kehadiran Anda</h3>
+                <div class="form-info">
+                    <p><strong>NIM:</strong> <span id="studentNIM"></span></p>
+                    <p><strong>Nama:</strong> <span id="studentName"></span></p>
+                    <p><strong>Pertemuan:</strong> <span id="meetingNumber"></span></p>
+                </div>
+                
+                <div class="error-message" id="errorMsg"></div>
+                
+                <form id="attendanceForm">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="status" value="Hadir" required>
+                            <span class="radio-custom hadir"></span>
+                            Hadir
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="status" value="Izin" required>
+                            <span class="radio-custom izin"></span>
+                            Izin
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="status" value="Tidak Hadir" required>
+                            <span class="radio-custom tidak-hadir"></span>
+                            Tidak Hadir
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">Kirim Absensi</button>
+                        <button type="button" class="btn-rekap" id="btnRekap" style="display: none;" onclick="window.location.href='rekap.html'">📊 Lihat Rekap Kehadiran</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            { no: 1, nim: '131424061', nama: 'HAIDIL RUDIN' },
+            { no: 2, nim: '131424062', nama: 'SRI RAHMAWATI NOHO' },
+            { no: 3, nim: '131424063', nama: 'CITRA BAGUE' },
+            { no: 4, nim: '131424064', nama: 'MOHAMMAD LAIL NASARU' },
+            { no: 5, nim: '131424065', nama: 'CINDRAWATI PULUBUHU' },
+            { no: 6, nim: '131424066', nama: 'PRISKAWATI MOHA' },
+            { no: 7, nim: '131424067', nama: 'SITI Y. NGGIU' },
+            { no: 8, nim: '131424068', nama: 'SALWA SULISTIA ISMAIL' },
+            { no: 9, nim: '131424069', nama: 'DEFIYANA DINA' },
+            { no: 10, nim: '131424070', nama: 'RINA AMELIA PAKAYA' },
+            { no: 11, nim: '131424071', nama: 'TIARA SAFITRI' },
+            { no: 12, nim: '131424072', nama: 'NURJANNAH A. PALILATI' },
+            { no: 13, nim: '131424073', nama: 'NOLDI LAUDENGI' },
+            { no: 14, nim: '131424074', nama: 'NEYZA USMAN' },
+            { no: 15, nim: '131424076', nama: 'EYON PAKAYA' },
+            { no: 16, nim: '131424077', nama: 'FERLINA SIOLIMBONA' },
+            { no: 17, nim: '131424078', nama: 'ADELIA NURQAMARIAH HAMID' },
+            { no: 18, nim: '131424079', nama: 'RAMADAN NUSURA' },
+            { no: 19, nim: '131424080', nama: 'ZAHWA AULIA RAMADHANI BAKARI' },
+            { no: 20, nim: '131424081', nama: 'FRISKA POU' },
+            { no: 21, nim: '131424082', nama: 'CICI FADILA HUSAIN' },
+            { no: 22, nim: '131424083', nama: 'ADELIA SALEH' },
+            { no: 23, nim: '131424084', nama: 'INDRIANI ABDULLAH' },
+            { no: 24, nim: '131424085', nama: 'MUHAMAD RIANDA PUTERA PAPUTUNGAN' },
+            { no: 25, nim: '131424086', nama: 'AULIA APRILIA ISHAK' },
+            { no: 26, nim: '131424088', nama: 'MOHAMAD FAUZAN SUPU' },
+            { no: 27, nim: '131424089', nama: 'NUR REYSA PRANING AHMAD' },
+            { no: 28, nim: '131424090', nama: 'RIAN VAN GOBEL' }
+        ];
+
+        // Cek apakah user sudah login
+        const currentNIM = sessionStorage.getItem('currentNIM');
+        if (!currentNIM) {
+            window.location.href = 'index.html';
+        }
+
+        // Cari data mahasiswa yang sedang login
+        const currentStudent = students.find(s => s.nim === currentNIM);
+
+        // Tampilkan info user
+        document.getElementById('currentUser').textContent = `${currentStudent.nama} (${currentStudent.nim})`;
+        document.getElementById('studentNIM').textContent = currentStudent.nim;
+        document.getElementById('studentName').textContent = currentStudent.nama;
+
+        // FITUR KHUSUS: Tampilkan admin panel dan tombol rekap untuk NIM 131424085
+        if (currentNIM === '131424085') {
+            document.getElementById('btnRekap').style.display = 'block';
+            document.getElementById('specialBadge').innerHTML = '<span class="special-access-badge">👑 Admin Access</span>';
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+
+        // Fungsi untuk mengubah password
+        function changePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageEl = document.getElementById('passwordMessage');
+
+            if (!newPassword || !confirmPassword) {
+                messageEl.style.color = '#e74c3c';
+                messageEl.textContent = 'Harap isi semua field!';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                messageEl.style.color = '#e74c3c';
+                messageEl.textContent = 'Password tidak cocok!';
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                messageEl.style.color = '#e74c3c';
+                messageEl.textContent = 'Password minimal 6 karakter!';
+                return;
+            }
+
+            // Simpan password baru
+            localStorage.setItem('systemPassword', newPassword);
+            messageEl.style.color = '#27ae60';
+            messageEl.textContent = '✓ Password berhasil diubah! Semua mahasiswa harus menggunakan password baru.';
+            
+            // Clear input
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Tampilkan daftar mahasiswa
+        const studentList = document.getElementById('studentList');
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.no}</td>
+                <td>${student.nim}</td>
+                <td>${student.nama}</td>
+            `;
+            studentList.appendChild(row);
+        });
+
+        // Fungsi untuk mendapatkan pertemuan saat ini
+        function getCurrentMeeting() {
+            let meetings = JSON.parse(localStorage.getItem('meetings') || '{}');
+            const today = new Date().toDateString();
+            
+            if (!meetings[today]) {
+                const uniqueDays = Object.keys(meetings).length;
+                meetings[today] = Math.min(uniqueDays + 1, 16);
+                localStorage.setItem('meetings', JSON.stringify(meetings));
+            }
+            
+            return meetings[today];
+        }
+
+        const currentMeeting = getCurrentMeeting();
+        document.getElementById('meetingNumber').textContent = currentMeeting;
+
+        // Cek apakah sudah absen hari ini
+        function hasAttendedToday() {
+            const today = new Date().toDateString();
+            const attendanceLog = JSON.parse(localStorage.getItem('attendanceLog') || '{}');
+            return attendanceLog[currentNIM] && attendanceLog[currentNIM][today];
+        }
+
+        // Handle form submit
+        const attendanceForm = document.getElementById('attendanceForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        if (hasAttendedToday()) {
+            errorMsg.textContent = 'Anda sudah mengisi absensi hari ini!';
+            attendanceForm.querySelector('.btn-submit').disabled = true;
+        }
+
+        attendanceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (hasAttendedToday()) {
+                errorMsg.textContent = 'Anda sudah mengisi absensi hari ini!';
+                return;
+            }
+            
+            const status = document.querySelector('input[name="status"]:checked').value;
+            const today = new Date().toDateString();
+            
+            // Simpan log absensi
+            let attendanceLog = JSON.parse(localStorage.getItem('attendanceLog') || '{}');
+            if (!attendanceLog[currentNIM]) {
+                attendanceLog[currentNIM] = {};
+            }
+            attendanceLog[currentNIM][today] = true;
+            localStorage.setItem('attendanceLog', JSON.stringify(attendanceLog));
+            
+            // Simpan data absensi
+            let attendanceData = JSON.parse(localStorage.getItem('attendanceData') || '{}');
+            if (!attendanceData[currentNIM]) {
+                attendanceData[currentNIM] = {
+                    nama: currentStudent.nama,
+                    meetings: {},
+                    hadir: 0,
+                    izin: 0,
+                    tidakHadir: 0
+                };
+            }
+            
+            // Simpan status pertemuan
+            attendanceData[currentNIM].meetings[currentMeeting] = status;
+            
+            // Update counter
+            if (status === 'Hadir') {
+                attendanceData[currentNIM].hadir++;
+            } else if (status === 'Izin') {
+                attendanceData[currentNIM].izin++;
+            } else if (status === 'Tidak Hadir') {
+                attendanceData[currentNIM].tidakHadir++;
+            }
+            
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+            
+            alert('Absensi berhasil disimpan!');
+            window.location.href = 'rekap.html';
+        });
+
+        function logout() {
+            sessionStorage.removeItem('currentNIM');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Kehadiran</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .user-info p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .content-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card.hadir {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .card.izin {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .card.tidak-hadir {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card .number {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .content-box h3 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .admin-notice {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 1200px;
+        }
+
+        .attendance-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .attendance-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+        }
+
+        .attendance-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .attendance-table tbody tr.current-user {
+            background: #fff3cd;
+            font-weight: 600;
+        }
+
+        .status-hadir {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-izin {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .status-tidak-hadir {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .editable-cell {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .editable-cell:hover {
+            background: #e3f2fd;
+            transform: scale(1.1);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-back {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .special-access-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Modal untuk edit */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .modal-info p {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .radio-group-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-label-modal {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-label-modal:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .radio-label-modal input {
+            margin-right: 10px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .header h2 {
+                font-size: 16px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Rekap Kehadiran</h1>
+            <h2>Kelas C - Manajemen Pendidikan</h2>
+            <div class="user-info">
+                <p>Login sebagai: <strong id="currentUser"></strong><span id="specialBadge"></span></p>
+                <button class="btn-logout" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <div class="admin-notice" id="adminNotice" style="display: none;">
+                👑 Mode Admin Aktif - Klik pada sel pertemuan (P1-P16) untuk mengedit kehadiran mahasiswa
+            </div>
+
+            <div class="summary-cards">
+                <div class="card hadir">
+                    <h3>Total Hadir</h3>
+                    <p class="number" id="totalHadir">0</p>
+                </div>
+                <div class="card izin">
+                    <h3>Total Izin</h3>
+                    <p class="number" id="totalIzin">0</p>
+                </div>
+                <div class="card tidak-hadir">
+                    <h3>Total Tidak Hadir</h3>
+                    <p class="number" id="totalTidakHadir">0</p>
+                </div>
+            </div>
+
+            <h3>Tabel Kehadiran Semua Mahasiswa</h3>
+            <div class="table-wrapper">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIM</th>
+                            <th>Nama</th>
+                            <th>P1</th>
+                            <th>P2</th>
+                            <th>P3</th>
+                            <th>P4</th>
+                            <th>P5</th>
+                            <th>P6</th>
+                            <th>P7</th>
+                            <th>P8</th>
+                            <th>P9</th>
+                            <th>P10</th>
+                            <th>P11</th>
+                            <th>P12</th>
+                            <th>P13</th>
+                            <th>P14</th>
+                            <th>P15</th>
+                            <th>P16</th>
+                            <th>Hadir</th>
+                            <th>Izin</th>
+                            <th>Tidak Hadir</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-back" onclick="window.location.href='dashboard.html'">Kembali ke Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Edit Kehadiran</div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <p><strong>Mahasiswa:</strong> <span id="editStudentName"></span></p>
+                    <p><strong>NIM:</strong> <span id="editStudentNIM"></span></p>
+                    <p><strong>Pertemuan:</strong> <span id="editMeeting"></span></p>
+                </div>
+                <div class="radio-group-modal">
+                    <label class="radio-label-modal">
+                        <input type="radio" name="editStatus" value="Hadir">
+                        <span>✓ Hadir</span>
+                    </label>
+                    <label class="radio-label-modal">
+                        <input type="radio" name="editStatus" value="Izin">
+                        <span>⚠ Izin</span>
+                    </label>
+                    <label class="radio-label-modal">
+                        <input type="radio" name="editStatus" value="Tidak Hadir">
+                        <span>✗ Tidak Hadir</span>
+                    </label>
+                    <label class="radio-label-modal">
+                        <input type="radio" name="editStatus" value="">
+                        <span>- Kosongkan</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeEditModal()">Batal</button>
+                <button class="btn-modal btn-save" onclick="saveEdit()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            { no: 1, nim: '131424061', nama: 'HAIDIL RUDIN' },
+            { no: 2, nim: '131424062', nama: 'SRI RAHMAWATI NOHO' },
+            { no: 3, nim: '131424063', nama: 'CITRA BAGUE' },
+            { no: 4, nim: '131424064', nama: 'MOHAMMAD LAIL NASARU' },
+            { no: 5, nim: '131424065', nama: 'CINDRAWATI PULUBUHU' },
+            { no: 6, nim: '131424066', nama: 'PRISKAWATI MOHA' },
+            { no: 7, nim: '131424067', nama: 'SITI Y. NGGIU' },
+            { no: 8, nim: '131424068', nama: 'SALWA SULISTIA ISMAIL' },
+            { no: 9, nim: '131424069', nama: 'DEFIYANA DINA' },
+            { no: 10, nim: '131424070', nama: 'RINA AMELIA PAKAYA' },
+            { no: 11, nim: '131424071', nama: 'TIARA SAFITRI' },
+            { no: 12, nim: '131424072', nama: 'NURJANNAH A. PALILATI' },
+            { no: 13, nim: '131424073', nama: 'NOLDI LAUDENGI' },
+            { no: 14, nim: '131424074', nama: 'NEYZA USMAN' },
+            { no: 15, nim: '131424076', nama: 'EYON PAKAYA' },
+            { no: 16, nim: '131424077', nama: 'FERLINA SIOLIMBONA' },
+            { no: 17, nim: '131424078', nama: 'ADELIA NURQAMARIAH HAMID' },
+            { no: 18, nim: '131424079', nama: 'RAMADAN NUSURA' },
+            { no: 19, nim: '131424080', nama: 'ZAHWA AULIA RAMADHANI BAKARI' },
+            { no: 20, nim: '131424081', nama: 'FRISKA POU' },
+            { no: 21, nim: '131424082', nama: 'CICI FADILA HUSAIN' },
+            { no: 22, nim: '131424083', nama: 'ADELIA SALEH' },
+            { no: 23, nim: '131424084', nama: 'INDRIANI ABDULLAH' },
+            { no: 24, nim: '131424085', nama: 'MUHAMAD RIANDA PUTERA PAPUTUNGAN' },
+            { no: 25, nim: '131424086', nama: 'AULIA APRILIA ISHAK' },
+            { no: 26, nim: '131424088', nama: 'MOHAMAD FAUZAN SUPU' },
+            { no: 27, nim: '131424089', nama: 'NUR REYSA PRANING AHMAD' },
+            { no: 28, nim: '131424090', nama: 'RIAN VAN GOBEL' }
+        ];
+
+        // Cek apakah user sudah login
+        const currentNIM = sessionStorage.getItem('currentNIM');
+        if (!currentNIM) {
+            window.location.href = 'index.html';
+        }
+
+        // Cari data mahasiswa yang sedang login
+        const currentStudent = students.find(s => s.nim === currentNIM);
+        const isAdmin = currentNIM === '131424085';
+
+        // Tampilkan info user
+        document.getElementById('currentUser').textContent = `${currentStudent.nama} (${currentStudent.nim})`;
+
+        // Tampilkan badge dan notice admin
+        if (isAdmin) {
+            document.getElementById('specialBadge').innerHTML = '<span class="special-access-badge">👑 Admin Access</span>';
+            document.getElementById('adminNotice').style.display = 'block';
+        }
+
+        // Ambil data absensi
+        let attendanceData = JSON.parse(localStorage.getItem('attendanceData') || '{}');
+
+        // Tampilkan summary untuk user yang login
+        if (attendanceData[currentNIM]) {
+            document.getElementById('totalHadir').textContent = attendanceData[currentNIM].hadir || 0;
+            document.getElementById('totalIzin').textContent = attendanceData[currentNIM].izin || 0;
+            document.getElementById('totalTidakHadir').textContent = attendanceData[currentNIM].tidakHadir || 0;
+        }
+
+        // Fungsi untuk mendapatkan status singkat
+        function getStatusShort(status) {
+            if (status === 'Hadir') return 'H';
+            if (status === 'Izin') return 'I';
+            if (status === 'Tidak Hadir') return 'A';
+            return '-';
+        }
+
+        // Fungsi untuk mendapatkan class CSS status
+        function getStatusClass(status) {
+            if (status === 'Hadir') return 'status-hadir';
+            if (status === 'Izin') return 'status-izin';
+            if (status === 'Tidak Hadir') return 'status-tidak-hadir';
+            return '';
+        }
+
+        // Variabel untuk menyimpan data edit
+        let editingData = {
+            nim: '',
+            meeting: 0
+        };
+
+        // Fungsi untuk membuka modal edit
+        function openEditModal(nim, meeting, currentStatus) {
+            const student = students.find(s => s.nim === nim);
+            document.getElementById('editStudentName').textContent = student.nama;
+            document.getElementById('editStudentNIM').textContent = nim;
+            document.getElementById('editMeeting').textContent = meeting;
+            
+            editingData.nim = nim;
+            editingData.meeting = meeting;
+            
+            // Set radio button sesuai status saat ini
+            const radios = document.querySelectorAll('input[name="editStatus"]');
+            radios.forEach(radio => {
+                if (radio.value === currentStatus) {
+                    radio.checked = true;
+                }
+            });
+            
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Fungsi untuk menutup modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Fungsi untuk menyimpan edit
+        function saveEdit() {
+            const selectedStatus = document.querySelector('input[name="editStatus"]:checked');
+            if (!selectedStatus) {
+                alert('Pilih status kehadiran!');
+                return;
+            }
+            
+            const newStatus = selectedStatus.value;
+            const nim = editingData.nim;
+            const meeting = editingData.meeting;
+            
+            // Update data absensi
+            if (!attendanceData[nim]) {
+                const student = students.find(s => s.nim === nim);
+                attendanceData[nim] = {
+                    nama: student.nama,
+                    meetings: {},
+                    hadir: 0,
+                    izin: 0,
+                    tidakHadir: 0
+                };
+            }
+            
+            // Kurangi counter status lama
+            const oldStatus = attendanceData[nim].meetings[meeting];
+            if (oldStatus === 'Hadir') attendanceData[nim].hadir--;
+            else if (oldStatus === 'Izin') attendanceData[nim].izin--;
+            else if (oldStatus === 'Tidak Hadir') attendanceData[nim].tidakHadir--;
+            
+            // Tambah counter status baru
+            if (newStatus === 'Hadir') attendanceData[nim].hadir++;
+            else if (newStatus === 'Izin') attendanceData[nim].izin++;
+            else if (newStatus === 'Tidak Hadir') attendanceData[nim].tidakHadir++;
+            
+            // Update status pertemuan
+            if (newStatus === '') {
+                delete attendanceData[nim].meetings[meeting];
+            } else {
+                attendanceData[nim].meetings[meeting] = newStatus;
+            }
+            
+            // Simpan ke localStorage
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+            
+            // Reload halaman
+            alert('Data berhasil diupdate!');
+            location.reload();
+        }
+
+        // Tampilkan tabel kehadiran semua mahasiswa
+        const tableBody = document.getElementById('attendanceTableBody');
+
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            
+            // Tandai baris mahasiswa yang sedang login
+            if (student.nim === currentNIM) {
+                row.classList.add('current-user');
+            }
+            
+            // Data mahasiswa
+            const studentData = attendanceData[student.nim] || {
+                meetings: {},
+                hadir: 0,
+                izin: 0,
+                tidakHadir: 0
+            };
+            
+            // Buat cell untuk nomor, nim, dan nama
+            let rowHTML = `
+                <td>${student.no}</td>
+                <td>${student.nim}</td>
+                <td style="text-align: left;">${student.nama}</td>
+            `;
+            
+            // Buat cell untuk pertemuan 1-16
+            for (let i = 1; i <= 16; i++) {
+                const status = studentData.meetings[i];
+                const statusShort = getStatusShort(status);
+                const statusClass = getStatusClass(status);
+                
+                // Tambahkan class editable jika admin
+                const editableClass = isAdmin ? 'editable-cell' : '';
+                const onclick = isAdmin ? `onclick="openEditModal('${student.nim}', ${i}, '${status || ''}')"` : '';
+                
+                rowHTML += `<td class="${statusClass} ${editableClass}" ${onclick}>${statusShort}</td>`;
+            }
+            
+            // Buat cell untuk total hadir, izin, tidak hadir
+            rowHTML += `
+                <td class="status-hadir"><strong>${studentData.hadir}</strong></td>
+                <td class="status-izin"><strong>${studentData.izin}</strong></td>
+                <td class="status-tidak-hadir"><strong>${studentData.tidakHadir}</strong></td>
+            `;
+            
+            row.innerHTML = rowHTML;
+            tableBody.appendChild(row);
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentNIM');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
